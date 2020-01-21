@@ -26,10 +26,13 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,21 +74,24 @@ public class MainActivity extends AppCompatActivity {
 
         // Create Pdf Writer for Writting into New Created Document
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(FILENAME));
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(FILENAME));
 
             // Open Document for Writting into document
             document.open();
 
             // User Define Method
             addMetaData(document);
-            addTitlePage(document);
+            addTitlePage(document, pdfWriter);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (DocumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         // Close Document after writting all content
         document.close();
 
@@ -104,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         document.addCreator("TAG");
     }
 
-    public void addTitlePage(Document document) throws DocumentException {
+    public void addTitlePage(Document document, PdfWriter pdfWriter) throws DocumentException, IOException {
         // Font Style for Document
         Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
         Font titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 22, Font.BOLD
@@ -167,6 +173,11 @@ public class MainActivity extends AppCompatActivity {
 
         prProfile.setFont(smallBold);
         document.add(prProfile);
+
+        String s = "<pre>this is <em>obviously</em> for <span style=\"text-decoration: underline;\">members</span> <strong>just</strong> <span style=\"background-color: #ff0000;\">going</span> to talk about 5 <span style=\"color: #ff0000;\">minutes </span>spontaneously you need to write down the text of what I say when</pre>";
+
+        XMLWorkerHelper worker = XMLWorkerHelper.getInstance();
+        worker.parseXHtml(pdfWriter, document, new StringReader(s));
 
         // Create new Page in PDF
         document.newPage();

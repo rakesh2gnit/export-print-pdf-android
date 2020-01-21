@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ExportOrPrintPdf</string>
+
+    <string name="html_text"></string>
 </resources>
